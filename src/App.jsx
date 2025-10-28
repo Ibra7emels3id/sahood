@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router";
 import Dashbord from "./pages/dashbord";
 import Trips from "./pages/trips";
 import Login from "./pages/Login";
@@ -69,7 +69,7 @@ const App = () => {
 
 
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/dashbord" element={<Dashbord UserId={users[0]} />} />
@@ -79,17 +79,11 @@ const App = () => {
                 <Route path="/bookings" element={<Bookings User={users[0]} AllUsers={AllUsers} />} />
                 <Route path="/amenities" element={<Amenities User={users[0]} AllUsers={AllUsers} />} />
                 <Route path="/safe" element={<Safe UserId={users[0]} AllUsers={AllUsers} />} />
-
-            
                 <Route path="expenses" element={<Expenses User={users[0]} AllUsers={AllUsers}/>} />
                 <Route path="reports" element={<Reports AllUsers={AllUsers} />} />
-
                 <Route path="*" element={<h1 className="text-center text-2xl font-bold mt-20">404 Not Found</h1>} />
-
-
-
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     );
 };
 

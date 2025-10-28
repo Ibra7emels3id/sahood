@@ -190,14 +190,14 @@ const ModelReceiptVoucher = ({ showModelReceiptVoucher, setShowModelReceiptVouch
                     <form onSubmit={HandleSubmitData}>
                         <div class="mt-8 text-center">
                             <h4 class="text-2xl text-slate-900 font-semibold">أضافة بيانات سند قبض</h4>
-                            <input onChange={(e) => setFormData({ ...FormData, name: e.target.value })} value={FormData.name} type="text" placeholder="أدخل الاسم" value={FormData.name} className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
-                            <input onChange={(e) => setFormData({ ...FormData, amount: e.target.value })} value={FormData.amount} type="number" placeholder="قيمة الفاتورة" value={FormData.price} className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
+                            <input onChange={(e) => setFormData({ ...FormData, name: e.target.value })} value={FormData.name} type="text" placeholder="أدخل الاسم" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
+                            <input onChange={(e) => setFormData({ ...FormData, amount: e.target.value })} value={FormData.amount} type="number" placeholder="قيمة الفاتورة" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
                             <select onChange={(e) => setFormData({ ...FormData, ProcessName: e.target.value })} value={FormData.ProcessName} name="type" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" id="">
                                 <option hidden>نوع الفاتورة</option>
                                 <option value="cash">نقدا</option>
                                 <option value="bank">بنكي</option>
                             </select>
-                            <input onChange={(e) => setFormData({ ...FormData, date: e.target.value })} value={FormData.date} type="date" placeholder="تاريخ الفاتورة" value={FormData.date} className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
+                            <input onChange={(e) => setFormData({ ...FormData, date: e.target.value })} value={FormData.date} type="date" placeholder="تاريخ الفاتورة" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
                             <textarea onChange={(e) => setFormData({ ...FormData, description: e.target.value })} value={FormData.description} name="description" cols="30" rows="3" placeholder="ملاحظات" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" id=""></textarea>
                         </div>
                         {
