@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Router, Routes } from "react-router";
 import Dashbord from "./pages/dashbord";
 import Trips from "./pages/trips";
 import Login from "./pages/Login";
@@ -14,6 +14,8 @@ import Reports from "./pages/Reports";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import Amenities from "./pages/Amenities";
 import Safe from "./pages/Safe";
+import OutBookings from "./pages/OutBookings";
+import EditTrip from "./pages/EditTrip";
 
 
 
@@ -75,9 +77,11 @@ const App = () => {
                     <Route path="/" element={<Login />} />
                     <Route path="/dashbord" element={<Dashbord UserId={users[0]} />} />
                     <Route path="/trips" element={<Trips User={users[0]} />} />
+                    <Route path="/trips/edit/:id" element={<EditTrip User={users[0]} />} />
                     <Route path="/trips/:id" element={<BusId User={users[0]} />} />
                     <Route path="/addNewUser" element={<AddNewUser />} />
                     <Route path="/bookings" element={<Bookings User={users[0]} AllUsers={AllUsers} />} />
+                    <Route path="/out-bookings" element={<OutBookings User={users[0]} AllUsers={AllUsers} />} />
                     <Route path="/amenities" element={<Amenities User={users[0]} AllUsers={AllUsers} />} />
                     <Route path="/safe" element={<Safe UserId={users[0]} AllUsers={AllUsers} />} />
                     <Route path="/expenses" element={<Expenses User={users[0]} AllUsers={AllUsers} />} />

@@ -67,7 +67,7 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                     d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
                                     data-original="#000000"></path>
                             </svg>
-                            <div class="mt-1 text-center">
+                            <div class=" text-center">
                                 <h4 class="text-2xl text-slate-900 font-semibold">ادخل بيانات المصروف</h4>
                                 <form onSubmit={HandleAddExpenses} class="mt-6">
                                     <div class="grid grid-cols-1 mt-6 gap-4">
@@ -89,17 +89,27 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                             </select>
                                         </div>
                                         <div className='flex flex-col items-start '>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
+                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                                <option hidden>نوع الدفع</option>
+                                                <option value="cash">كاش</option>
+                                                <option value="bank">شبكة</option>
+                                            </select>
+                                        </div>
+                                        <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">قيمة الفاتورة</label>
                                             <input onChange={(e) => setFormData({ ...formData, invoiceValue: Number(e.target.value) })} value={formData.invoiceValue || ''} type="number" placeholder="قمية الفاتورة"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
-                                        <div className='flex flex-col items-start '>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">القيمة المضافة</label>
                                             <p className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold'>%15</p>
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">أجمالي الفاتورة</label>
                                             <p className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold'>{Math.round(Number(formData.invoiceValue) * 1.15) || 0}</p>
+                                        </div>
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الفاتورة</label>

@@ -112,10 +112,10 @@ const ModelBillExchange = ({ showModelBillExchange, setShowModelBillExchange, Fe
             <div class="line"></div>
           </div>
 
-          <div class="info">
-            <span>وذلك قيمة:</span>
-            <div class="line">${Data?.amount}</div>
-          </div>
+              <div class="info">
+                <span>ملاحظة:</span>
+                <div class="line">${Data?.description}</div>
+              </div>
 
           <div class="footer">
             <div>المدير</div>
@@ -196,7 +196,7 @@ const ModelBillExchange = ({ showModelBillExchange, setShowModelBillExchange, Fe
                             <h4 class="text-2xl text-slate-900 font-semibold">أضافة بيانات سند صرف</h4>
                             <input onChange={(e) => setFormData({ ...FormData, name: e.target.value })} value={FormData.name} type="text" placeholder="أدخل الاسم" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
                             <input onChange={(e) => setFormData({ ...FormData, amount: e.target.value })} value={FormData.amount} type="number" placeholder="قيمة الفاتورة"  className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" />
-                            <select onChange={(e) => setFormData({ ...FormData, ProcessName: e.target.value })} value={FormData.ProcessName} name="type" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" id="">
+                            <select onChange={(e) => setFormData({ ...FormData, PaymentType: e.target.value })} value={FormData.ProcessName} name="type" className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-slate-900 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md" id="">
                                 <option hidden>نوع الفاتورة</option>
                                 <option value="cash">نقدا</option>
                                 <option value="bank">بنكي</option>

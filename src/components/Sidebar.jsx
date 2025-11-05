@@ -43,7 +43,7 @@ const Sidebar = () => {
 
 
     return (
-        <div className="w-64 bg-gray-900 text-white min-h-screen p-4">
+        <div className="w-64 bg-gray-900 text-white min-h-screen p-4 min-w-[270px]">
             <h2 className="text-3xl font-bold mb-6">
                 <img src={logo} alt="logo" className="rounded-full" />
             </h2>
@@ -56,6 +56,9 @@ const Sidebar = () => {
                 </li>
                 <li className="hover:text-yellow-400 cursor-pointer">
                     <Link to="/bookings" className="w-full bg-gray-800 border-b-amber-50 border-b block p-2">الحجوزات</Link>
+                </li>
+                <li className="hover:text-yellow-400 cursor-pointer">
+                    <Link to="/out-bookings" className="w-full bg-gray-800 border-b-amber-50 border-b block p-2">مكتب خارجي</Link>
                 </li>
                 <li className="hover:text-yellow-400 cursor-pointer">
                     <Link to="/amenities" className="w-full bg-gray-800 border-b-amber-50 border-b block p-2">قائمة الامانات</Link>

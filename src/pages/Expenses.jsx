@@ -140,7 +140,7 @@ const Expenses = ({ AllUsers, User }) => {
                         <label htmlFor="month" className="font-medium">اختر الشهر:</label>
                         <select
                             id="month"
-                            className="border border-gray-300 rounded-lg px-3 py-2 w-[200px]"
+                            className="border bg-white border-gray-300 rounded-lg px-3 py-2 w-[200px]"
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(e.target.value)}
                         >
@@ -165,7 +165,7 @@ const Expenses = ({ AllUsers, User }) => {
                         <label htmlFor="NameExpense" className="font-medium">اختر نوع الفاتورة:</label>
                         <select
                             id="NameExpense"
-                            className="border border-gray-300 rounded-lg px-3 py-2 w-[200px]"
+                            className="border bg-white border-gray-300 rounded-lg px-3 py-2 w-[200px]"
                             value={selectedType}
                             onChange={(e) => setSelectedType(e.target.value)}
                         >
@@ -183,7 +183,6 @@ const Expenses = ({ AllUsers, User }) => {
                             <option value="مصروفات أخرى">مصروفات أخرى</option>
                         </select>
                     </div>
-
                     {/* المكتب */}
                     {
                         User?.role === 'admin' && (
@@ -191,7 +190,7 @@ const Expenses = ({ AllUsers, User }) => {
                                 <label htmlFor="OfficeName" className="font-medium">اختر المكتب:</label>
                                 <select
                                     id="OfficeName"
-                                    className="border border-gray-300 rounded-lg px-3 py-2 w-[200px]"
+                                    className="border bg-white border-gray-300 rounded-lg px-3 py-2 w-[200px]"
                                     value={selectedOfficeName}
                                     onChange={(e) => setSelectedOfficeName(e.target.value)}
                                 >
@@ -206,15 +205,15 @@ const Expenses = ({ AllUsers, User }) => {
                         )
                     }
                 </div>
-
                 {/* Table */}
-                <div className='p-6'>
+                <div className='p-6 '>
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse border border-gray-200">
+                        <table className="table-auto bg-white w-full border-collapse border border-gray-200">
                             <thead>
                                 <tr>
                                     <th className="px-4 py-2 border border-gray-200">اسم المصروف</th>
                                     <th className="px-4 py-2 border border-gray-200">اسم المكتب</th>
+                                    <th className="px-4 py-2 border border-gray-200">نوع الدفع</th>
                                     <th className="px-4 py-2 border border-gray-200">قيمة المصروف</th>
                                     <th className="px-4 py-2 border border-gray-200">تاريخ المصروف</th>
                                 </tr>
@@ -224,6 +223,7 @@ const Expenses = ({ AllUsers, User }) => {
                                     <tr key={expense._id}>
                                         <td className="px-4 py-2 border border-gray-200">{expense.InvoiceName}</td>
                                         <td className="px-4 py-2 border border-gray-200">{expense.OfficeName}</td>
+                                        <td className="px-4 py-2 border border-gray-200">{expense.PaymentType === 'cash' ? 'نقدي' : 'بنك' }</td>
                                         <td className="px-4 py-2 border border-gray-200">
                                             {expense.invoiceValue}ر.س  بدون ضريبة  <br />
                                             <span className='text-sm text-gray-500'>{expense?.totalExpenses} ر.س  مع الضريبة </span>
@@ -231,47 +231,27 @@ const Expenses = ({ AllUsers, User }) => {
                                         <td className="px-4 py-2 border border-gray-200">{expense.invoiceDate}</td>
                                     </tr>
                                 ))}
-
                                 <tr>
-                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">إجمالي المصروفات</td>
-                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">إجمالي المصروفات</td>
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">
                                         {filteredExpenses.reduce((sum, exp) => sum + Number(exp.invoiceValue || 0), 0)} ر.س
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">إجمالي المصروف + الضريبة</td>
-                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">الضريبة</td>
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">
+                                        {(
+                                            filteredExpenses.reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0) * 0.15
+                                        ).toFixed(2)}{" "}
+                                        ر.س
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">إجمالي المصروف + الضريبة</td>
+                                    <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="3">
                                         {filteredExpenses.reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0)} ر.س
                                     </td>
                                 </tr>
-                                {/* 
-                                {
-                                    User?.role === 'admin' && (
-                                        <>
-                                            <tr>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">إجمالي ايراد التذاكر</td>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">
-                                                    {filteredReservations.reduce((sum, exp) => sum + Number(exp.NetTicketPrice || 0), 0)} ر.س
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">إجمالي أيراد الامانات</td>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">
-                                                    {filteredAmenities.reduce((sum, exp) => sum + Number(exp.NetTicketPrice || 0), 0)} ر.س
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">صافي الأرباح</td>
-                                                <td className="px-4 py-2 border border-gray-200 font-bold" colSpan="2">
-                                                    {filteredReservations.reduce((sum, exp) => sum + Number(exp.NetTicketPrice || 0), 0) + filteredAmenities.reduce((sum, exp) => sum + Number(exp.NetTicketPrice || 0), 0)
-                                                        - filteredExpenses.reduce((sum, exp) => sum + Number(exp.invoiceValue || 0), 0)} ر.س
-                                                </td>
-                                            </tr>
-                                        </>
-                                    )
-                                } */}
                             </tbody>
                         </table>
                     </div>

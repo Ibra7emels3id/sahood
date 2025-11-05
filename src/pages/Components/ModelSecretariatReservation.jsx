@@ -54,10 +54,10 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
     // Calculate Net Ticket Price
     useEffect(() => {
         const price = Number(formData.price) || 0;
-        const ticketOfficeFees = Number(formData.ticketOfficeFees) || 0;
+        const ticketOfficeFees = Number(formData.ticketOfficeInvitedFees) || 0;
         const NetTicketPrice = price - ticketOfficeFees;
         setFormData({ ...formData, NetTicketPrice });
-    }, [formData.price, formData.ticketOfficeFees]);
+    }, [formData.price, formData.ticketOfficeInvitedFees]);
 
 
     // Show Hide Model Scroll
@@ -68,7 +68,6 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
             document.body.style.overflow = 'auto';
         }
     }, [openSecretariatModel]);
-
 
 
 
@@ -91,9 +90,9 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
                             <div class="mt-1 text-center">
                                 <h4 class="text-2xl text-slate-900 font-semibold">بيانات الامانة</h4>
                                 <form onSubmit={HandleReserveSeat}>
-                                    <div class="grid grid-cols-2 mt-3 gap-4">
+                                    <div class="grid grid-cols-3 mt-3 gap-4">
                                         <div className='flex flex-col items-start ' >
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">أسم العميل</label>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">أسم المرسل</label>
                                             <input onChange={(e) => setFormData({ ...formData, name: e.target.value })} required value={formData.name} type="text" placeholder="أسم العميل"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
@@ -103,46 +102,71 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم الهاتف</label>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المرسل</label>
                                             <input onChange={(e) => setFormData({ ...formData, phone: Number(e.target.value) })} required value={formData.phone || ""} type="number" placeholder="رقم الهاتف"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم الجواز</label>
-                                            <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} value={formData.passport || ""} type="text" placeholder="رقم الجواز"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <div className="grid grid-cols-3 gap-4 col-span-3 ">
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المستلم</label>
+                                                <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} value={formData.passport || ""} type="text" placeholder="رقم الجواز"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">عدد الشنط</label>
+                                                <input onChange={(e) => setFormData({ ...formData, numberBags: Number(e.target.value) })} required value={formData.numberBags || ""} type="number" placeholder="عدد الشنط"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            </div>
+                                            <div className="flex w-full">
+                                                <div className='flex flex-col w-full'>
+                                                    <label class="text-slate-900 text-start text-sm font-medium mb-2 block">تاريخ المغادرة</label>
+                                                    <div className="flex border border-gray-300 rounded-md">
+                                                        <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >{new Date(date).toLocaleDateString('en-GB')}</p>
+                                                        <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >{time}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">عدد الشنط</label>
-                                            <input onChange={(e) => setFormData({ ...formData, numberBags: Number(e.target.value) })} required value={formData.numberBags || ""} type="number" placeholder="عدد الشنط"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <div className="col-span-3 grid grid-cols-3 gap-4 w-full">
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
+                                                <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                                    <option hidden>نوع الدفع</option>
+                                                    <option value="cash">كاش</option>
+                                                    <option value="bank">شبكة</option>
+                                                </select>
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">سعر التذكرة</label>
+                                                <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} required value={formData.price || ""} type="number" placeholder="سعر التذكرة"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">رسوم السائق</label>
+                                                <input onChange={(e) => {
+                                                    setFormData({ ...formData, ticketOfficeInvitedFees: Number(e.target.value) })
+                                                }} required value={formData.ticketOfficeInvitedFees || ""} type="number" placeholder="رسوم السائق"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            </div>
                                         </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">وقت المغادرة</label>
-                                            <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >{time}</p>
+                                        <div className="grid col-span-3 grid-cols-3 gap-4">
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">صافي سعر التذكرة</label>
+                                                <input readOnly value={formData.NetTicketPrice || ""} type="number" placeholder="صافي سعر التذكرة"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
+                                                <input readOnly value={track} type="text"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">الوجهة</label>
+                                                <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} value={formData.destination} type="text"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                            </div>
                                         </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ المغادرة</label>
-                                            <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >{new Date(date).toLocaleDateString('en-GB')}</p>
-                                        </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">سعر التذكرة</label>
-                                            <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} required value={formData.price || ""} type="number" placeholder="سعر التذكرة"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
-                                        </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رسوم المكتب</label>
-                                            <input onChange={(e) => {
-                                                setFormData({ ...formData, ticketOfficeFees: Number(e.target.value) })
-                                            }} required value={formData.ticketOfficeFees || ""} type="number" placeholder="رسوم المكتب"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                        </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">صافي سعر التذكرة</label>
-                                            <input readOnly value={formData.NetTicketPrice || ""} type="number" placeholder="صافي سعر التذكرة"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
-                                        </div>
-                                        <div className='flex flex-col items-start col-span-2'>
+                                        <div className='flex flex-col items-start col-span-3'>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">ملاحظة</label>
                                             <textarea className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500' name="notes" onChange={(e) => setFormData({ ...formData, notes: e.target.value })} value={formData.notes || ""} placeholder="ملاحظة" id=""></textarea>
                                         </div>

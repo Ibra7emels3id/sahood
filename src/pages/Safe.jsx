@@ -15,7 +15,7 @@ const Safe = ({ UserId, AllUsers }) => {
     const [dataSafe, setDataSafe] = React.useState([]);
     const [User, setUser] = React.useState([]);
     const [transactions, setTransactions] = React.useState([]);
-    const [Index, setIndex] = React.useState("8YneRJ21iSYbs2puM39vnaKTqtP2");
+    const [Index, setIndex] = React.useState("IPnYXnvjytUd8cpsCIEmQu7XtQC2");
     const [user, loading] = useAuthState(auth);
     const [reservations, setReservations] = React.useState([]);
     const [amenities, setAmenities] = React.useState([]);
@@ -31,7 +31,8 @@ const Safe = ({ UserId, AllUsers }) => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [aLoading, setALoading] = useState(false);
     const [safeResAdmin, setSafeResAdmin] = useState({});
-
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+    const [outBookings, setOutBookings] = useState([]);
 
     // Handle Show Model Receipt Voucher
     const HandleShowModelReceiptVoucher = () => {
@@ -55,11 +56,12 @@ const Safe = ({ UserId, AllUsers }) => {
             setALoading(true);
             if (UserId?.role === "user") {
                 // Get User
-                const [safeRes, reservationsRes, amenitiesRes, expensesRes] = await Promise.all([
+                const [safeRes, reservationsRes, amenitiesRes, expensesRes, outBookings] = await Promise.all([
                     axios.get(`${base}/api/get-safe/${uid}`),
                     axios.get(`${base}/api/account/reservations/${uid}`),
                     axios.get(`${base}/api/account/amenities/${uid}`),
-                    axios.get(`${base}/api/get-expenses/${uid}`)
+                    axios.get(`${base}/api/get-expenses/${uid}`),
+                    axios.get(`${base}/api/account/out-bookings/${uid}`)
                 ]);
 
                 const sortedTransactions = safeRes.data.transactions.sort(
@@ -71,14 +73,16 @@ const Safe = ({ UserId, AllUsers }) => {
                 setReservations(reservationsRes.data);
                 setAmenities(amenitiesRes.data);
                 setExpensesData(expensesRes.data);
+                setOutBookings(outBookings.data.outBookings);
             } else {
                 // Get Admin
-                const [safeRes, reservationsRes, amenitiesRes, expensesRes , safeResAdmin] = await Promise.all([
+                const [safeRes, reservationsRes, amenitiesRes, expensesRes, safeResAdmin, outBookings] = await Promise.all([
                     axios.get(`${base}/api/get-safe`),
                     axios.get(`${base}/api/account/reservations/${Index}`),
                     axios.get(`${base}/api/account/amenities/${Index}`),
                     axios.get(`${base}/api/get-expenses/${Index}`),
-                    axios.get(`${base}/api/get-safe/${Index}`)
+                    axios.get(`${base}/api/get-safe/${Index}`),
+                    axios.get(`${base}/api/account/out-bookings/${Index}`)
                 ]);
 
                 setUser(safeRes.data);
@@ -87,6 +91,7 @@ const Safe = ({ UserId, AllUsers }) => {
                 setAmenities(amenitiesRes.data);
                 setExpensesData(expensesRes.data);
                 setSafeResAdmin(safeResAdmin.data);
+                setOutBookings(outBookings.data.outBookings);
             }
             setALoading(false);
         } catch (error) {
@@ -140,22 +145,95 @@ const Safe = ({ UserId, AllUsers }) => {
     }, [transactions, dataSafeAdmin?.transactions, fromDate, toDate, filterType]);
 
 
-    // Filter By Month 
-    const TotalProfit = User?.filter((trip) => {
-        const tripDate = new Date(trip.createdAt);
-        return tripDate.getMonth() + 1 === Number(selectedMonth);
+    // safeResAdmin
+    const month = Number(selectedMonth);
+
+    let totalMonthBalance = 0;
+    let totalMonthBalanceCash = 0;
+    let totalMonthBalanceBank = 0;
+
+    // 
+    User?.forEach((safe) => {
+
+        const monthTransactions = safe.transactions.filter((t) => {
+            const date = new Date(t.createdAt);
+            return date.getMonth() + 1 === month;
+        });
+
+        // 
+        const officeMonthBalance = monthTransactions.reduce((sum, t) => {
+            if (t.type === "deposit") return sum + t.amount;
+            if (t.type === "removes") return sum - t.amount;
+            return sum;
+        }, 0);
+
+        // 
+        const officeMonthBalanceCash = monthTransactions.reduce((sum, t) => {
+            if (t.type === "deposit" && t.PaymentType === "cash") return sum + t.amount;
+            if (t.type === "removes" && t.PaymentType === "cash") return sum - t.amount;
+            return sum;
+        }, 0);
+
+        // 
+        const officeMonthBalanceBank = monthTransactions.reduce((sum, t) => {
+            if (t.type === "deposit" && t.PaymentType === "bank") return sum + t.amount;
+            if (t.type === "removes" && t.PaymentType === "bank") return sum - t.amount;
+            return sum;
+        }, 0);
+
+        // 
+        totalMonthBalance += officeMonthBalance;
+        totalMonthBalanceCash += officeMonthBalanceCash;
+        totalMonthBalanceBank += officeMonthBalanceBank;
     });
 
     const filteredTransactionss = reservations?.filter((trip) => {
         if (trip.status !== "booked") return false;
         const tripDate = new Date(trip.createdAt);
-        return tripDate.getMonth() + 1 === Number(selectedMonth);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        //
+        if (tripMonth !== Number(selectedMonth)) return false;
+        //
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        //
+        return true;
     });
 
     const filteredTransactionsAmenities = amenities?.filter((trip) => {
         if (trip.status !== "booked") return false;
+
         const tripDate = new Date(trip.createdAt);
-        return tripDate.getMonth() + 1 === Number(selectedMonth);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        //
+        if (tripMonth !== Number(selectedMonth)) return false;
+        //
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        //
+        return true;
+    });
+
+
+    const filteredTransactionsOutBookings = outBookings?.filter((trip) => {
+        if (trip.status !== "booked") return false;
+
+        const tripDate = new Date(trip.createdAt);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        // 
+        if (tripMonth !== Number(selectedMonth)) return false;
+
+        // 
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        // 
+        return true;
     });
 
     const filteredTransactionsExpenses = expensesData?.filter((trip) => {
@@ -163,13 +241,12 @@ const Safe = ({ UserId, AllUsers }) => {
         return tripDate.getMonth() + 1 === Number(selectedMonth);
     });
 
-    // Filter By Month
-    const totalBalance = TotalProfit?.reduce(
-        (total, trip) => total + trip.balance,
+    const totalAmount = filteredTransactionss?.reduce(
+        (total, trip) => total + trip.NetTicketPrice,
         0
     );
 
-    const totalAmount = filteredTransactionss?.reduce(
+    const TotalOutBookings = filteredTransactionsOutBookings?.reduce(
         (total, trip) => total + trip.NetTicketPrice,
         0
     );
@@ -183,6 +260,107 @@ const Safe = ({ UserId, AllUsers }) => {
         (total, trip) => total + trip.totalExpenses,
         0
     );
+
+    // handle Date User Filter By Month and Day
+    const filterDataUserReservations = reservations?.filter((trip) => {
+        if (trip.status !== "booked") return false;
+
+        const tripDate = new Date(trip.createdAt);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        // 
+        if (tripMonth !== Number(selectedMonth)) return false;
+
+        // 
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        // 
+        return true;
+    });
+
+    // Amanities
+    const filterDataUserAmenities = amenities?.filter((trip) => {
+        if (trip.status !== "booked") return false;
+
+        const tripDate = new Date(trip.createdAt);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        // 
+        if (tripMonth !== Number(selectedMonth)) return false;
+
+        // 
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        // 
+        return true;
+    });
+
+    // Out Bookings
+    const filterDataUserOutBookings = outBookings?.filter((trip) => {
+        if (trip.status !== "booked") return false;
+
+        const tripDate = new Date(trip.createdAt);
+        const tripMonth = tripDate.getMonth() + 1;
+        const tripDay = tripDate.getDate();
+        // 
+        if (tripMonth !== Number(selectedMonth)) return false;
+
+        // 
+        if (selectedDay && selectedDay !== "all") {
+            return tripDay === Number(selectedDay);
+        }
+        // 
+        return true;
+    });
+
+    // Expenses
+    const filteredExpenses = expensesData?.filter((exp) => {
+        const expDate = new Date(exp.createdAt);
+        const expMonth = expDate.getMonth() + 1;
+        const expDay = expDate.getDate();
+
+        // 
+        if (expMonth !== Number(selectedMonth)) return false;
+
+        // 
+        if (selectedDay && selectedDay !== "all" && expDay !== Number(selectedDay)) {
+            return false;
+        }
+
+        return true;
+    });
+
+
+    const totalNetPriceReservations = filterDataUserReservations?.reduce(
+        (sum, trip) => sum + Number(trip.NetTicketPrice || 0),
+        0
+    );
+
+    const totalNetPriceAmenities = filterDataUserAmenities?.reduce(
+        (sum, trip) => sum + Number(trip.NetTicketPrice || 0),
+        0
+    );
+
+    const totalNetPriceOutBookings = filterDataUserOutBookings?.reduce(
+        (sum, trip) => sum + Number(trip.NetTicketPrice || 0),
+        0
+    );
+
+    const totalExpenses = filteredExpenses?.reduce(
+        (sum, exp) => sum + Number(exp.totalExpenses || 0),
+        0
+    );
+
+    const totalCashExpenses = filteredExpenses
+        ?.filter((exp) => exp.PaymentType === "cash")
+        .reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0);
+
+    const totalBankExpenses = filteredExpenses
+        ?.filter((exp) => exp.PaymentType === "bank")
+        .reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0);
+
 
     // Handle Print 
     const handlePrint = (Data) => {
@@ -254,7 +432,7 @@ const Safe = ({ UserId, AllUsers }) => {
                 </div>
                 <div class="title">${Data?.ProcessName}</div>
                 <div style="text-align:left;">
-                  <p>0550603044 - 0535399886</p>
+                  <p>0550603044</p>
                 </div>
               </div>
     
@@ -272,7 +450,7 @@ const Safe = ({ UserId, AllUsers }) => {
     
               <div class="info">
                 <span>مبلغ وقدره:</span>
-                <div class="line">${Data?.amount}</div>
+                <div class="line">${Data?.amount} ريال</div>
               </div>
     
               <div class="info">
@@ -283,8 +461,8 @@ const Safe = ({ UserId, AllUsers }) => {
               </div>
     
               <div class="info">
-                <span>وذلك قيمة:</span>
-                <div class="line">${Data?.amount}</div>
+                <span>ملاحظة:</span>
+                <div class="line">${Data?.description}</div>
               </div>
     
               <div class="footer">
@@ -306,8 +484,6 @@ const Safe = ({ UserId, AllUsers }) => {
             printWindow.print();
         };
     };
-
-
 
 
     // Fetch 
@@ -349,116 +525,107 @@ const Safe = ({ UserId, AllUsers }) => {
                             <button onClick={() => HandleShowModelBillExchange()} className=" cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">أضافة سند صرف</button>
                         </div>
                     </div>
-                    {
-                        UserId?.role === 'admin' && (
-                            <div className="flex">
+                    <div className="flex gap-4">
+                        {
+                            UserId?.role === 'admin' && (
                                 <select onChange={(e) => {
                                     setIndex(e.target.value)
-                                }} name="offices" id="offices" className='p-2 w-1/5 mt-5 border border-gray-300 focus:outline-none'>
-                                    {AllUsers.filter((it) => it.role === 'user')?.map((user, index) => (
-                                        <option key={user.uid} value={user.uid}>{user?.OfficeName}</option>
+                                }} name="offices" value={Index} id="offices" className=' bg-white rounded p-2 w-1/5 mt-5 border border-gray-300 focus:outline-none'>
+                                    {AllUsers?.map((user, index) => (
+                                        <option key={index} value={user.uid}>{user?.OfficeName}</option>
                                     ))}
                                 </select>
-                            </div>
-                        )}
+                            )}
+                        <select
+                            id="month"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className=' bg-white rounded p-2 w-1/5 mt-5 border border-gray-300 focus:outline-none'
+                        >
+                            {[...Array(12)].map((_, i) => (
+                                <option key={i + 1} value={i + 1}>
+                                    {new Date(0, i).toLocaleString('ar-EG', { month: 'long' })}
+                                </option>
+                            ))}
+                        </select>
+                        {/* day */}
+                        <select
+                            id="day"
+                            value={selectedDay}
+                            onChange={(e) => setSelectedDay(e.target.value)}
+                            className=' bg-white rounded p-2 w-1/5 mt-5 border border-gray-300 focus:outline-none'
+                        >
+                            <option value="all">كل الايام</option>
+                            {[...Array(31)].map((_, i) => (
+                                <option key={i + 1} value={i + 1}>
+                                    {i + 1}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="flex flex-col">
                         {UserId?.role === 'admin' ? (
                             <>
                                 <div className=" balance mt-10 grid grid-cols-4 gap-4">
-                                    <div className="flex flex-col shadow p-5 border border-gray-300">
-                                        <h3 className="text-1xl font-bold"><span className='text-xl font-bold text-gray-600'>اجمالي الايرادات</span> <br />
+                                    <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                        <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'>اجمالي الايرادات الكلية</span> <br />
                                             <span className='text-xs font-bold text-red-400 mt-3 block'>حجوزات + أمانات + سند قبض - سند صرف - مصروفات</span>
                                         </h3>
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <label htmlFor="month" className="font-semibold">اختر الشهر:</label>
-                                            <select
-                                                id="month"
-                                                value={selectedMonth}
-                                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                                className="border px-2 py-1 rounded"
-                                            >
-                                                {[...Array(12)].map((_, i) => (
-                                                    <option key={i + 1} value={i + 1}>
-                                                        {new Date(0, i).toLocaleString('ar-EG', { month: 'long' })}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                        <h3 className={`${totalMonthBalance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold mt-2`}>
+                                            {totalMonthBalance} ر . س
+                                        </h3>
+                                        <div className="flex justify-between align-center mt-2">
+                                            {/* <p className={`${totalMonthBalanceBank < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                <span className='text-black'>بنك:</span> {totalMonthBalanceBank} ر . س
+                                            </p>
+                                            <p className={`${totalMonthBalanceCash < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                <span className='text-black'>نقدي:</span> {totalMonthBalanceCash} ر . س
+                                            </p> */}
                                         </div>
+                                    </div>
+                                    <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                        <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> أجمالي خزنة {dataSafeAdmin?.name}</span> <br />
+                                            <span className='text-xs font-bold text-red-400 my-4 block'>أجمالي رصيد الخزنة الكلي</span>
+                                        </h3>
+                                        <p className={`${safeResAdmin.balance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
+                                            {safeResAdmin.balance} ر . س
+                                        </p>
+                                        <div className="flex justify-between align-center mt-2">
+                                            <p className={`${safeResAdmin.bank < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                <span className='text-black'>بنك:</span> {safeResAdmin.bank} ر . س
+                                            </p>
+                                            <p className={`${safeResAdmin.cash < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                <span className='text-black'>كاش:</span> {safeResAdmin.cash} ر . س
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                        <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> أيراد {dataSafeAdmin?.name} </span> <br />
+                                            <span className='text-xs font-bold text-red-400 my-4 block'>الحجوزات + الامانات + مكتب خارجي</span>
+                                        </h3>
                                         <h3 className="text-2xl font-bold">
-                                            {totalBalance} ر . س
+                                            {totalAmountAmenities + totalAmount + TotalOutBookings} ر . س
                                         </h3>
-                                    </div>
-                                    <div className="flex flex-col shadow p-5 border border-gray-300">
-                                        <h3 className="text-1xl font-bold"><span className='text-xl font-bold text-gray-600'> أيراد {dataSafeAdmin?.name} </span> <br />
-                                            <span className='text-xs font-bold text-red-400 my-4 block'>أجمالي الايردات</span>
-                                        </h3>
-                                        <div className="flex items-center gap-2 mb-4 h-8">
-                                            <p className='font-semibold text-2xl'>رصيد الخزنة</p>
-                                            {/* <label htmlFor="month" className="font-semibold">اختر الشهر:</label>
-                                            <select
-                                                id="month"
-                                                value={selectedMonth}
-                                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                                className="border px-2 py-1 rounded"
-                                            >
-                                                {[...Array(12)].map((_, i) => (
-                                                    <option key={i + 1} value={i + 1}>
-                                                        {new Date(0, i).toLocaleString('ar-EG', { month: 'long' })}
-                                                    </option>
-                                                ))}
-                                            </select> */}
+                                        <div className="flex justify-between align-center mt-3">
+                                            <p className={`${totalAmount < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                {totalAmount} ر . س
+                                            </p>
+                                            <p className={`${totalAmountAmenities < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                {totalAmountAmenities} ر . س
+                                            </p>
+                                            <p className={`${TotalOutBookings < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                {TotalOutBookings} ر . س
+                                            </p>
                                         </div>
-                                        <h3 className={`${safeResAdmin?.balance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
-                                            {safeResAdmin?.balance} ر . س
-                                        </h3>
                                     </div>
-                                    <div className="flex flex-col shadow p-5 border border-gray-300">
-                                        <h3 className="text-1xl font-bold"><span className='text-xl font-bold text-gray-600'> أيراد {dataSafeAdmin?.name} </span> <br />
-                                            <span className='text-xs font-bold text-red-400 my-4 block'>الحجوزات + الامانات</span>
-                                        </h3>
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <label htmlFor="month" className="font-semibold">اختر الشهر:</label>
-                                            <select
-                                                id="month"
-                                                value={selectedMonth}
-                                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                                className="border px-2 py-1 rounded"
-                                            >
-                                                {[...Array(12)].map((_, i) => (
-                                                    <option key={i + 1} value={i + 1}>
-                                                        {new Date(0, i).toLocaleString('ar-EG', { month: 'long' })}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <h3 className="text-2xl font-bold">
-                                            {totalAmountAmenities + totalAmount} ر . س
-                                        </h3>
-                                    </div>
-                                    <div className="flex flex-col shadow p-5 border border-gray-300">
-                                        <h3 className="text-1xl font-bold"><span className='text-xl font-bold text-gray-600'> مصروفات {dataSafeAdmin?.name} </span> <br />
+                                    <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                        <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> مصروفات {dataSafeAdmin?.name} </span> <br />
                                             <span className='text-xs font-bold text-red-400 my-4 block'>جميع معاملات المصروفات</span>
                                         </h3>
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <label htmlFor="month" className="font-semibold">اختر الشهر:</label>
-                                            <select
-                                                id="month"
-                                                value={selectedMonth}
-                                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                                className="border px-2 py-1 rounded"
-                                            >
-                                                {[...Array(12)].map((_, i) => (
-                                                    <option key={i + 1} value={i + 1}>
-                                                        {new Date(0, i).toLocaleString('ar-EG', { month: 'long' })}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
                                         <h3 className="text-2xl font-bold">
                                             {totalAmountExpenses} ر . س
                                         </h3>
                                     </div>
-
                                 </div>
                                 <div className="flex flex-col mt-8">
                                     <h3 className="text-lg font-bold mb-4">جميع المعاملات المالية.</h3>
@@ -469,22 +636,22 @@ const Safe = ({ UserId, AllUsers }) => {
                                         type="date"
                                         value={fromDate}
                                         onChange={e => setFromDate(e.target.value)}
-                                        className="w-1/4 p-2 border border-gray-300"
+                                        className="w-1/4 p-2 bg-white  border border-gray-300"
                                     />
                                     <input
                                         type="date"
                                         value={toDate}
                                         onChange={e => setToDate(e.target.value)}
-                                        className="w-1/4 p-2 border border-gray-300"
+                                        className="w-1/4 p-2 border bg-white border-gray-300"
                                     />
                                     <select
-                                        className="w-1/4 p-2 border border-gray-300"
+                                        className="w-1/4 p-2 border bg-white border-gray-300"
                                         value={filterType}
                                         onChange={e => setFilterType(e.target.value)}
                                     >
                                         <option value="all">الكل</option>
                                         <option value="deposit">وارد</option>
-                                        <option value="withdrawal">صادر</option>
+                                        <option value="removes">صادر</option>
                                     </select>
                                 </div>
 
@@ -501,6 +668,9 @@ const Safe = ({ UserId, AllUsers }) => {
                                                     </th>
                                                     <th class="px-4 py-4 text-right text-xs font-semibold text-slate-900 uppercase tracking-wider">
                                                         أسم المعاملة
+                                                    </th>
+                                                    <th class="px-4 py-4 text-right text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                                                        نوع المعاملة
                                                     </th>
                                                     <th class="px-4 py-4 text-right text-xs font-semibold text-slate-900 uppercase tracking-wider">
                                                         القيمة
@@ -520,7 +690,7 @@ const Safe = ({ UserId, AllUsers }) => {
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white divide-y divide-gray-200 whitespace-nowrap">
-                                                {filteredTransactionsAdmin?.map((trip, index) => (
+                                                {filteredTransactionsAdmin?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))?.map((trip, index) => (
                                                     <tr>
                                                         <td class="px-4 py-4 text-sm text-slate-600 font-medium">
                                                             {index + 1}
@@ -531,7 +701,9 @@ const Safe = ({ UserId, AllUsers }) => {
                                                         <td class="px-4 py-4 text-sm text-slate-900 font-medium">
                                                             {trip?.ProcessName} <br />
                                                             {trip?.PersonName && `الي ${trip?.PersonName}`}
-
+                                                        </td>
+                                                        <td class="px-4 py-4 text-sm text-slate-900 font-medium">
+                                                            {trip?.PaymentType === "cash" ? "نقدي" : "بنك"}
                                                         </td>
                                                         <td class="px-4 py-4 text-sm text-slate-900 font-medium">
                                                             {trip?.amount} ر . س
@@ -539,7 +711,7 @@ const Safe = ({ UserId, AllUsers }) => {
                                                         <td class="px-4 py-4 text-sm text-slate-900 font-medium">
                                                             {trip?.description}
                                                         </td>
-                                                        <td class="px-4 py-4 text-sm text-slate-600 font-medium">
+                                                        <td class={trip?.type === "deposit" ? "px-4 py-4 text-sm text-green-600 font-medium" : "px-4 py-4 text-sm text-red-600 font-medium"}>
                                                             {trip?.type === "deposit" ? "وارد" : "صادر"}
                                                         </td>
                                                         <td class="px-4 py-4 text-sm text-slate-600 font-medium">
@@ -560,25 +732,57 @@ const Safe = ({ UserId, AllUsers }) => {
                         )
                             : (
                                 <>
-                                    <div className=" balance mt-10 grid grid-cols-4 gap-4">
-                                        <div className="flex flex-col shadow p-10">
-                                            <h1 className="text-2xl font-bold">الرصيد الحالي</h1>
-                                            <h1 className={dataSafe.balance > 0 ? "text-2xl font-bold text-green-600" : "text-2xl font-bold text-red-600"}>{dataSafe.balance} ر . س</h1>
+                                    <div className=" balance mt-10 grid grid-cols-3 gap-4">
+                                        <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                            <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> أجمالي الخزنة {dataSafeAdmin?.name}</span> <br />
+                                                <span className='text-xs font-bold text-red-400 my-4 block'>أجمالي رصيد الخزنة الكلي</span>
+                                            </h3>
+                                            <p className={`${dataSafe.balance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
+                                                {dataSafe.balance} ر . س
+                                            </p>
+                                            <div className="flex justify-between align-center mt-4">
+                                                <p className={`${dataSafe.bank < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    <span className='text-black'>بنك:</span> {dataSafe.bank} ر . س
+                                                </p>
+                                                <p className={`${dataSafe.cash < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    <span className='text-black'>كاش:</span> {dataSafe.cash} ر . س
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col shadow p-10">
-                                            <h1 className="text-2xl font-bold">أيراد الحجوزات</h1>
-                                            <h1 className="text-2xl font-bold">
-                                                {reservations?.filter((trip) => trip.status === "booked").reduce((total, trip) => total + trip.NetTicketPrice, 0)} ر . س
-                                            </h1>
+                                        <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                            <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> أجمالي الايراد خلال الشهر</span> <br />
+                                                <span className='text-xs font-bold text-red-400 my-4 block'>حجوزات + أمانات + مكتب جارجي</span>
+                                            </h3>
+                                            <p className={`${totalNetPriceReservations + totalNetPriceAmenities + totalNetPriceOutBookings < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
+                                                {totalNetPriceReservations + totalNetPriceAmenities + totalNetPriceOutBookings} ر . س
+                                            </p>
+                                            <div className="flex justify-between align-center mt-4">
+                                                <p className={`${totalNetPriceReservations < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    {totalNetPriceReservations} ر . س
+                                                </p>
+                                                <p className={`${totalNetPriceAmenities < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    {totalNetPriceAmenities} ر . س
+                                                </p>
+                                                <p className={`${totalNetPriceOutBookings < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    {totalNetPriceOutBookings} ر . س
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col shadow p-10">
-                                            <h3 className="text-2xl font-bold">أيراد الامانات</h3>
-                                            <h1 className="text-2xl font-bold">{amenities?.filter((trip) => trip.status === "booked").reduce((total, trip) => total + trip.NetTicketPrice, 0)} ر . س</h1>
-                                        </div>
-                                        <div className="flex flex-col shadow p-10">
-                                            <h2 className="text-2xl font-bold">المصروفات</h2>
-                                            <h3 className="text-2xl font-bold">{expensesData?.reduce((total, trip) => total + trip.totalExpenses, 0)} ر . س</h3>
-                                            <p className='text-sm text-red-500  font-bold mt-2'>{expensesData?.reduce((total, trip) => total + trip.invoiceValue, 0)} ر . س <span className="text-red-500 m-2">بدون ضريبة</span></p>
+                                        <div className="flex flex-col bg-white rounded-md shadow p-5 border border-gray-300">
+                                            <h3 className="text-1xl font-bold"><span className='text-lg font-bold text-gray-600'> أجمالي المصروفات {dataSafeAdmin?.name}</span> <br />
+                                                <span className='text-xs font-bold text-red-400 my-4 block'>أجمالي المصروفات المالية</span>
+                                            </h3>
+                                            <p className={`${totalExpenses < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
+                                                {totalExpenses} ر . س
+                                            </p>
+                                            <div className="flex justify-between align-center mt-4">
+                                                <p className={`${totalBankExpenses < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    <span className='text-black'>بنك:</span> {totalBankExpenses} ر . س
+                                                </p>
+                                                <p className={`${totalCashExpenses < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
+                                                    <span className='text-black'>كاش:</span> {totalCashExpenses} ر . س
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col mt-8">
@@ -590,22 +794,22 @@ const Safe = ({ UserId, AllUsers }) => {
                                             type="date"
                                             value={fromDate}
                                             onChange={e => setFromDate(e.target.value)}
-                                            className="w-1/4 p-2 border border-gray-300"
+                                            className="w-1/4 p-2 border border-gray-300 bg-white"
                                         />
                                         <input
                                             type="date"
                                             value={toDate}
                                             onChange={e => setToDate(e.target.value)}
-                                            className="w-1/4 p-2 border border-gray-300"
+                                            className="w-1/4 p-2 border border-gray-300 bg-white"
                                         />
                                         <select
-                                            className="w-1/4 p-2 border border-gray-300"
+                                            className="w-1/4 p-2 border border-gray-300 bg-white"
                                             value={filterType}
                                             onChange={e => setFilterType(e.target.value)}
                                         >
                                             <option value="all">الكل</option>
                                             <option value="deposit">وارد</option>
-                                            <option value="withdrawal">صادر</option>
+                                            <option value="removes">صادر</option>
                                         </select>
                                     </div>
 

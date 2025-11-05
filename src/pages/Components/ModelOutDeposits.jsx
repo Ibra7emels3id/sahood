@@ -1,58 +1,54 @@
-import axios from 'axios';
 import React, { useEffect } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import axios from 'axios';
 import { toast } from 'sonner';
 import { auth } from '../../Config/Firebase/ConfigFirebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
-const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTrips, date, time, track, busNumber, OfficeName }) => {
+const ModelOutDeposits = ({ isOpen, onClose, FetchDateTrips }) => {
     const [formData, setFormData] = React.useState({});
-    const [user] = useAuthState(auth);
     const [loading, setLoading] = React.useState(false);
+    const [user] = useAuthState(auth)
+    const [OfficeName, setOfficeName] = React.useState("");
+    const [userId, setUserId] = React.useState("");
 
-
-
-    // Reserve a seat
-    const HandleReserveSeat = async (e) => {
+    // Handle Create New Trip
+    const handleCreateBook = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
-            setLoading(true);
-            const res = await axios.put(`${import.meta.env.VITE_SOME_URL}/api/trips/${id}/reserve`, {
+            await axios.post(`${import.meta.env.VITE_SOME_URL}/api/out-booking`, {
                 ...formData,
-                seat: count,
-                date,
-                NetTicketPrice: Number(formData.NetTicketPrice),
-                time,
-                track,
-                busNumber,
+                uid: userId || user?.uid,
                 OfficeName,
-                uid: user?.uid,
-                email: user?.email
+                type: "deposits",
             }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            })
-            toast.success(res.data.message);
+            });
+            toast.success('تم إضافة الحجز بنجاح');
             FetchDateTrips();
             onClose();
             setFormData({
-                name: "",
-                phone: "",
-                passport: "",
-                numberBags: "",
-                ticketOfficeInvitedFees: "",
-                NetTicketPrice: ""
+                name: '',
+                name2: '',
+                busNumber: '',
+                track: '',
+                date: '',
+                time: '',
+                price: '',
+                seats: ''
             });
             setLoading(false);
         } catch (error) {
             console.error(error);
-            toast.error("حدث خطاء ما، حاول مرة اخرى");
             setLoading(false);
         }
-    };
+    }
 
 
-    // Calculate NetTicketPrice whenever price or ticketOfficeInvitedFees changes
+
+    // Handle Price 
     useEffect(() => {
         const price = Number(formData.price) || 0;
         const ticketOfficeInvitedFees = Number(formData.ticketOfficeInvitedFees) || 0;
@@ -61,21 +57,27 @@ const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTr
     }, [formData.price, formData.ticketOfficeInvitedFees]);
 
 
-    // Show Hide Model Scroll
+
+    // Handle Hide scroll when modal is open
     useEffect(() => {
-        if (openSeatModel) {
+        if (isOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'auto';
         }
-    }, [openSeatModel]);
+
+    }, [isOpen]);
 
 
-
+    // Fetch My Account
+    useEffect(() => {
+        setOfficeName(user?.displayName);
+        setUserId(user?.uid);
+    }, [user, user?.uid, user?.displayName]);
 
 
     return (
-        <div className={` ${openSeatModel ? 'block' : 'hidden'}`}>
+        <div className={` ${isOpen ? 'block' : 'hidden'}`}>
             <div>
                 <div id="modal">
                     <div class="fixed inset-0 p-4 flex flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto">
@@ -91,27 +93,27 @@ const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTr
                                     data-original="#000000"></path>
                             </svg>
                             <div class="mt-1 text-center">
-                                <h4 class="text-2xl text-slate-900 font-semibold">بيانات التذكرة</h4>
-                                <form onSubmit={HandleReserveSeat}>
-                                    <div class="grid grid-cols-3 mt-6 gap-4">
+                                <h4 class="text-2xl text-slate-900 font-semibold">بيانات أمانة خارجية</h4>
+                                <form onSubmit={handleCreateBook}>
+                                    <div class="grid grid-cols-2 mt-6 gap-4">
                                         <div className='flex flex-col items-start ' >
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">أسم العميل</label>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">أسم المرسل</label>
                                             <input onChange={(e) => setFormData({ ...formData, name: e.target.value })} required value={formData.name} type="text" placeholder="أسم العميل"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start ' >
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">الجنسية</label>
-                                            <input onChange={(e) => setFormData({ ...formData, typeSix: e.target.value })} required value={formData?.typeSix} type="text" placeholder="الجنسية"
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">اسم المستلم</label>
+                                            <input onChange={(e) => setFormData({ ...formData, RecipientName: e.target.value })} required value={formData?.typeSix} type="text" placeholder="أسم المستلم"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم الهاتف</label>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المرسل</label>
                                             <input onChange={(e) => setFormData({ ...formData, phone: Number(e.target.value) })} required value={formData.phone || ""} type="number" placeholder="رقم الهاتف"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم الجواز</label>
-                                            <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} value={formData.passport || ""} type="text" placeholder="رقم الجواز"
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المستلم</label>
+                                            <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} required value={formData.passport || ""} type="text" placeholder="رقم الهاتف المستلم"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
@@ -120,22 +122,37 @@ const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTr
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الميلاد</label>
-                                            <input onChange={(e) => setFormData({ ...formData, BirthDate: e.target.value })} required type="date"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">وقت المغادرة</label>
+                                            <input
+                                                type="time"
+                                                value={formData.time24 || ""}
+                                                onChange={(e) => {
+                                                    const [hours, minutes] = e.target.value.split(":");
+                                                    const hourNum = parseInt(hours);
+                                                    const ampm = hourNum >= 12 ? "PM" : "AM";
+                                                    const hour12 = hourNum % 12 || 12;
+                                                    const formatted = `${hour12}:${minutes} ${ampm}`;
+                                                    setFormData({
+                                                        ...formData,
+                                                        time24: e.target.value,
+                                                        time: formatted,
+                                                    });
+                                                }}
+                                                className="border rounded px-3 py-2 w-full"
+                                            />
+                                            <p className="mt-2 text-gray-600">الوقت المختار: {formData.time}</p>
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">النوع</label>
-                                            <select onChange={(e) => setFormData({ ...formData, gender: e.target.value })} value={formData.gender} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option hidden>أختر النوع</option>
-                                                <option value="ذكر">ذكر</option>
-                                                <option value="انثى">انثى</option>
-                                            </select>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ المغادرة</label>
+                                            <input onChange={(e) => setFormData({ ...formData, date: e.target.value })} type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المقاعد</label>
-                                            <input onChange={(e) => setFormData({ ...formData, seat: count })} type="number" placeholder="رقم المقعد"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value={count} readOnly />
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
+                                            <input onChange={(e) => setFormData({ ...formData, track: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='الرياض الي دمشق' />
+                                        </div>
+                                        <div className='flex flex-col items-start '>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">مدينة الوصول</label>
+                                            <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='مدينة الوصول' />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
@@ -145,44 +162,23 @@ const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTr
                                                 <option value="bank">شبكة</option>
                                             </select>
                                         </div>
-                                        <div className="col-span-3 grid grid-cols-3 gap-4 w-full">
+                                        <div className="grid grid-cols-3 col-span-2 gap-4">
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">أجمالي سعر التذكرة</label>
                                                 <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} required value={formData.price || ''} class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="number" placeholder="أجمالي سعر التذكرة" />
                                             </div>
                                             <div className='flex flex-col items-start '>
-                                                <label class="text-slate-900 text-sm font-medium mb-2 block">عمولة السائق (أحتياري)</label>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">سعر المكتب المدعو للتذكرة</label>
                                                 <input onChange={(e) => {
                                                     setFormData({ ...formData, ticketOfficeInvitedFees: Number(e.target.value), })
-                                                }} value={formData.ticketOfficeInvitedFees || ''} type="number" placeholder="عمولة السائق"
+                                                }} value={formData.ticketOfficeInvitedFees || ''} type="number" placeholder="عمولة المكتب المدعو للتذكرة"
                                                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
-                                            <div className='flex flex-col  items-start'>
-                                                <label class="text-slate-900 text-sm font-medium mb-2 block">صافي ايراد المكتب</label>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">صافي الايراد</label>
                                                 <p placeholder="صافي الايراد" class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                                     {formData.NetTicketPrice || 0}
                                                 </p>
-                                            </div>
-                                        </div>
-                                        <div className="col-span-3 grid grid-cols-3 gap-4 w-full">
-                                            <div className="flex flex-col">
-                                                <div className='flex flex-col items-start '>
-                                                    <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الحجز</label>
-                                                </div>
-                                                <div className='flex border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                                                    <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border border-gray-300 border-none focus:ring-2 focus:ring-blue-500" >{new Date(date).toLocaleDateString('en-GB')}</p>
-                                                    <p placeholder="التاريخ" class="w-full text-start px-4 py-2 border border-gray-300 border-none focus:ring-2 focus:ring-blue-500" >{time}</p>
-                                                </div>
-                                            </div>
-                                            <div className='flex flex-col  items-start'>
-                                                <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
-                                                <p type="text" placeholder="المسار"  class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                    {track}
-                                                </p>
-                                            </div>
-                                            <div className='flex flex-col  items-start'>
-                                                <label class="text-slate-900 text-sm font-medium mb-2 block">الوجهة</label>
-                                                <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} value={formData.destination} placeholder="الوجهة" class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
                                         </div>
                                     </div>
@@ -209,4 +205,4 @@ const ModelTicketReservation = ({ openSeatModel, onClose, count, id, FetchDateTr
     );
 }
 
-export default ModelTicketReservation;
+export default ModelOutDeposits;

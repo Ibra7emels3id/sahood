@@ -107,15 +107,15 @@ const Dashbord = ({ UserId }) => {
                 <div className="p-6 flex-col">
                     <h2 className="text-2xl font-bold mb-4">مرحبًا بك في لوحة التحكم 🚍</h2>
                     <div className="grid grid-cols-3 gap-6  mt-8">
-                        <div className="bg-[#eee] p-5 rounded shadow shadow-[#eee]">
+                        <div className="bg-[#eee] p-5 rounded border border-[#fff] shadow shadow-[#eee]">
                             <h3 className="text-lg font-bold mb-2">إجمالي الرحلات</h3>
                             <p className="text-3xl font-bold">{tripsData.length}</p>
                         </div>
-                        <div className=" bg-[#eee] p-4 rounded shadow">
+                        <div className=" bg-[#eee] p-4 rounded border border-[#fff] shadow">
                             <h3 className="text-lg font-bold mb-2">إجمالي الحجوزات الناجحة</h3>
                             <p className="text-3xl font-bold">{AllReservations?.filter((trip) => trip.status === "booked").length}</p>
                         </div>
-                        <div className="bg-[#eee] p-4 rounded shadow">
+                        <div className="bg-[#eee] p-4 rounded border border-[#fff] shadow">
                             <h3 className="text-lg font-bold mb-2">إجمالي الامانات الناجحة</h3>
                             <p className="text-3xl font-bold">
                                 {AllAmenities?.filter((trip) => trip.status === "booked").length}
@@ -124,13 +124,13 @@ const Dashbord = ({ UserId }) => {
                         {
                             UserId?.role === "admin" && (
                                 <>
-                                    <div className="bg-[#eee] p-4 rounded shadow">
+                                    <div className="bg-[#eee] p-4 rounded border border-[#fff] shadow">
                                         <h3 className="text-lg font-bold mb-2">إجمالي الايردات</h3>
                                         <p className="text-3xl font-bold">
                                             {totalBalance} ر.س
                                         </p>
                                     </div>
-                                    <div className="bg-[#eee] p-5 rounded shadow shadow-[#eee]">
+                                    <div className="bg-[#eee] p-5 rounded border border-[#fff] shadow shadow-[#eee]">
                                         <h3 className="text-lg font-bold mb-2">إجمالي المصروفات</h3>
                                         <p className="text-3xl font-bold">
                                             {ExpensesData.reduce((sum, exp) => sum + Number(exp.invoiceValue || 0), 0)} ر.س

@@ -89,85 +89,88 @@ const Amenities = ({ User, AllUsers }) => {
 
 
     // Handle Print
-    const handlePrint = (id) => {
-        const reservation = Rvations.find(r => r._id === id);
-        if (!reservation) {
-            console.error("Reservation not found");
-            return;
-        }
-
-        let timeString = reservation.time?.trim() || "00:00";
-
-        let date;
-        if (/am|pm/i.test(timeString)) {
-            date = new Date(`1970-01-01 ${timeString}`);
-        } else {
-            date = new Date(`1970-01-01T${timeString}:00`);
-        }
-
-        let arrivalTime = "غير معروف";
-        if (!isNaN(date.getTime())) {
-            date.setHours(date.getHours() - 1);
-            arrivalTime = date.toLocaleTimeString('ar-EG', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-            });
-        }
-
-        const printWindow = window.open('', '_blank', 'width=900,height=800');
-        printWindow.document.write(`
+    const handlePrintAmenit = (id) => {
+            const reservation = Rvations.find(r => r._id === id) || Rvations.find(r => r._id === id);
+            if (!reservation) {
+                console.error("Reservation not found");
+                return;
+            }
+    
+            // 
+            let timeString = reservation.time?.trim() || "00:00";
+    
+            // 
+            let date;
+            if (/am|pm/i.test(timeString)) {
+                date = new Date(`1970-01-01 ${timeString}`);
+            } else {
+                date = new Date(`1970-01-01T${timeString}:00`);
+            }
+    
+            // 
+            let arrivalTime = "غير معروف";
+            if (!isNaN(date.getTime())) {
+                date.setHours(date.getHours() - 1);
+                arrivalTime = date.toLocaleTimeString('ar-EG', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                });
+            }
+    
+            const printWindow = window.open('', '_blank', 'width=900,height=800');
+            printWindow.document.write(`
         <html>
           <head>
             <title>تذكرة الباص</title>
             <style>
-              body { font-family: Arial, sans-serif; text-align: center; }
+              body { font-family: Arial, sans-serif; text-align: center; font-size: 18px; }
               .ticket { border: 2px dashed #000; padding: 20px; margin: 20px; }
               h2 { margin-bottom: 10px; }
             </style>
           </head>
-          <body>
+          <body style="font-weight: bold;">
             <div id="ticket" style="width:800px; border:2px solid #000; padding:15px; font-family:Arial; direction:rtl; text-align:right">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <img src="${logo}" alt="logo" style="height:50px;"/>
-                <p>009665678901 - 009665678901</p>
-                <span>International Transport</span>
+                <p>0535399886 - 0550603044</p>
+                <span>حافلة سهود للنقل البري </span>
               </div>
               <hr/>
-              <h2 style="margin:20px 0;">تذكرة حجز مقعد في الحافلة</h2>
+              <h2 style="margin:20px 0;">تذكرة وزن زائد</h2>
               <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;">
-                <p style="font-size:16px; width:160px;">الاسم: ${reservation.name || "ابراهيم السعيد"}</p>
-                <p style="font-size:15px; width:170px;">الجوال: ${reservation.phone}</p>
-                <p style="font-size:15px; width:170px;">رقم الجواز: ${reservation.passport || "-"}</p>
-                <p style="font-size:15px; width:180px;">رقم التذكرة: ${reservation.ticketNumber}</p>
+              <p style="font-size:15px; width:180px;">رقم التذكرة: ${reservation.ticketNumber}</p>
+              <p style="font-size:16px; width:160px;">أسم المرسل: ${reservation.name || "-"}</p>
+              <p style="font-size:15px; width:180px;">اسم المستلم: ${reservation.RecipientName}</p>
+                <p style="font-size:15px; width:170px;">رقم المرسل: ${reservation.phone}</p>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;">
-                <p style="font-size:16px; width:160px;">رقم المقعد: ${reservation.seat}</p>
-                <p style="font-size:15px; width:170px;">المسار: ${reservation.track}</p>
-                <p style="font-size:15px; width:170px;">رقم الباص: ${reservation.busNumber}</p>
-                <p style="font-size:15px; width:180px;">الوقت: ${reservation.time}</p>
+                <p style="font-size:15px; width:170px;">رقم المستلم: ${reservation.passport || "-"}</p>
+                <p style="font-size:15px; width:170px;">المسار: ${reservation.track || "-"}</p>
+                <p style="font-size:15px; width:170px;">الوجهة: ${reservation.destination || "-"}</p>
+                <p style="font-size:15px; width:170px;">السعر: ${reservation.price || "-"} ريال</p>
               </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;">
                     <p style="font-size:16px; width:160px;">التاريخ: ${new Date(reservation.date).toLocaleDateString('ar-EG')}</p>
+                    <p style="font-size:15px; width:180px;">الوقت: ${reservation.time}</p>
                     <p style="font-size:15px; width:170px;">وقت الحضور: ${arrivalTime}</p>
                     <p style="font-size:15px; width:170px;">المكتب: ${reservation.OfficeName}</p>
-                    <p style="font-size:15px; width:170px;">السعر: ${reservation.price} ريال</p>
                     </div>
                 <div style=" display:flex; justify-content:space-between; width:97%;">
-                    <p style="margin-top:20px; font-size:18px;">ختم وتوقيع الوكيل ومصدر التذكرة</p>
+                    <p style="font-size:12px;">رقم الباص: ${reservation.busNumber}</p>
                     <p style="margin-top:20px; font-size:12px;">${new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
                 </div>
             </div>
           </body>
         </html>
       `);
-
-        printWindow.document.close();
-        printWindow.onload = () => {
-            printWindow.focus();
-            printWindow.print();
+    
+            printWindow.document.close();
+            printWindow.onload = () => {
+                printWindow.focus();
+                printWindow.print();
+            };
         };
-    };
 
 
     // Fetch Trips Data from API
@@ -200,16 +203,13 @@ const Amenities = ({ User, AllUsers }) => {
             <div className="flex-1">
                 <Header />
                 <div className="p-6 flex-col">
-                    <div className="flex justify-between items-center">
-                        {/* <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="أبحث باستخدام رقم الرحلة" className="border border-gray-300 rounded-md px-4 w-[300px] outline-none py-2" /> */}
-                    </div>
                     <div className="table w-full mt-3">
                         {/* Filter By month and OfficeName */}
                         <div className="flex justify-between items-center mb-4">
-                            <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="أبحث باستخدام رقم التذكرة" className="border border-gray-300 rounded-md px-4 w-[300px] outline-none py-2" />
-                            <div className=" flex justify-end gap-4 mb-4">
+                            <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="أبحث باستخدام رقم التذكرة" className="border bg-white border-gray-300 rounded-md px-4 w-[300px] outline-none py-2" />
+                            <div className=" flex justify-end gap-4">
                                 <select onChange={(e) => setFilterMonth(e.target.value)}
-                                    value={filterMonth} className="border border-gray-300 rounded-md px-4 py-2 outline-none w-[250px]">
+                                    value={filterMonth} className="border bg-white border-gray-300 rounded-md px-4 py-2 outline-none w-[250px]">
                                     <option value="all">كل الشهور</option>
                                     <option value="1">يناير</option>
                                     <option value="2">فبراير</option>
@@ -226,7 +226,7 @@ const Amenities = ({ User, AllUsers }) => {
                                 </select>
                                 {
                                     User?.role === "admin" && (
-                                        <select onChange={(e) => setFilterOfficeName(e.target.value)} className="border border-gray-300 rounded-md px-4 py-2 outline-none ml-4 w-[250px]">
+                                        <select onChange={(e) => setFilterOfficeName(e.target.value)} className="border bg-white border-gray-300 rounded-md px-4 py-2 outline-none ml-4 w-[250px]">
                                             {User?.role === "admin" ? (
                                                 <>
                                                     <option value="all">كل المكاتب</option>
@@ -314,7 +314,7 @@ const Amenities = ({ User, AllUsers }) => {
                                             {trip.status === "booked" ? "محجوز" : "غير محجوز"}
                                         </td>
                                         <td className="px-4 flex items-center justify-center py-4 text-sm">
-                                            <button onClick={() => handlePrint(trip._id)} type='button' className="cursor-pointer text-blue-600 font-medium flex item-center justify-center">
+                                            <button onClick={() => handlePrintAmenit(trip._id)} type='button' className="cursor-pointer text-blue-600 font-medium flex item-center justify-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
                                                 </svg>
