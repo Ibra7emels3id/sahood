@@ -181,7 +181,7 @@ const BusId = ({ User }) => {
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <img src="${logo}" alt="logo" style="height:50px;"/>
             <p>0535399886 - 0550603044</p>
-            <span>حافلة سهود للنقل البري </span>
+            <span>حافلة سهود للنقل البري</span>
           </div>
           <hr/>
           <h2 style="margin:20px 0;">تذكرة وزن زائد</h2>
@@ -268,7 +268,7 @@ const BusId = ({ User }) => {
       <div class="header">
         <img src="${logo}" alt="logo" />
         <p style="text-align: center; font-size: 18px; font-weight: bold;">0535399886 - 0550603044</p>
-        <div style="text-align: end; font-size: 24px; font-weight: bold; class="title">شركة النقل البري</div>
+        <div style="text-align: end; font-size: 24px; font-weight: bold; class="title">شركة حافلة سهود للنقل الدولي</div>
       </div>
 
       <div class="info">
@@ -401,7 +401,7 @@ const BusId = ({ User }) => {
       <div style="display: flex; justify-content: space-between; align-items: center;" class="header">
         <img src="${logo}" alt="logo" />
         <p style="text-align: center; font-size: 18px; font-weight: bold;">0535399886 - 0550603044</p>
-        <div class="title" style="; font-size: 24px; font-weight: bold;">شركة النقل الدولي</div>
+        <div class="title" style="; font-size: 24px; font-weight: bold;">شركة حافلة سهود للنقل الدولي</div>
       </div>
 
       <div class="info">
