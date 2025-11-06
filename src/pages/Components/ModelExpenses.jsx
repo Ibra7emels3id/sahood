@@ -6,9 +6,10 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect } from 'react';
 
 const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
+    const [user] = useAuthState(auth);
     const [formData, setFormData] = React.useState({});
     const [loading, setLoading] = React.useState(false);
-    const [user] = useAuthState(auth);
+    const [tax, setTax] = React.useState(15);
 
 
     // Add To Expenses
@@ -44,8 +45,10 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
 
     // 
     useEffect(() => {
-        setFormData({ ...formData, totalExpenses: Math.round(Number(formData.invoiceValue) * 1.15) || 0 });
-    }, [formData.invoiceValue])
+        const total =
+            Number(formData.invoiceValue) + (Number(formData.invoiceValue) * Number(tax) / 100) || 0;
+        setFormData({ ...formData, totalExpenses: total });
+    }, [formData.invoiceValue, tax]);
 
 
 
@@ -103,13 +106,15 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">القيمة المضافة</label>
-                                            <p className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold'>%15</p>
-                                        </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">أجمالي الفاتورة</label>
-                                            <p className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold'>{Math.round(Number(formData.invoiceValue) * 1.15) || 0}</p>
-                                        </div>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">القيمة المضافة</label>
+                                                <input onChange={(e) => setTax(Number(e.target.value))} value={tax || ''} type="number" placeholder="القيمة المضافة" className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold' />
+                                            </div>
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">القيمة الكلية</label>
+                                                <p className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold'>
+                                                    {formData.totalExpenses || 0}
+                                                </p>
+                                            </div>
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الفاتورة</label>

@@ -357,6 +357,7 @@ const Safe = ({ UserId, AllUsers }) => {
         ?.filter((exp) => exp.PaymentType === "cash")
         .reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0);
 
+
     const totalBankExpenses = filteredExpenses
         ?.filter((exp) => exp.PaymentType === "bank")
         .reduce((sum, exp) => sum + Number(exp.totalExpenses || 0), 0);

@@ -136,7 +136,6 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">وقت المغادرة</label>
-                                            {/* <input onChange={(e) => setFormData({ ...formData, time: e.target.value })} type="time" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" /> */}
                                             <input
                                                 type="time"
                                                 value={formData.time24 || ""}
@@ -170,7 +169,7 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
-                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
                                                 <option hidden>نوع الدفع</option>
                                                 <option value="cash">كاش</option>
                                                 <option value="bank">شبكة</option>
