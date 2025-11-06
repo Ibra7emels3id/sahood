@@ -37,7 +37,12 @@ const ModelOutDeposits = ({ isOpen, onClose, FetchDateTrips }) => {
                 date: '',
                 time: '',
                 price: '',
-                seats: ''
+                seats: '',
+                ticketOfficeFees: '',
+                ticketOfficeInvitedFees: '',
+                NetTicketPrice: '',
+                numberBags: '',
+                PaymentType: '',
             });
             setLoading(false);
         } catch (error) {
@@ -144,19 +149,19 @@ const ModelOutDeposits = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ المغادرة</label>
-                                            <input onChange={(e) => setFormData({ ...formData, date: e.target.value })} type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <input onChange={(e) => setFormData({ ...formData, date: e.target.value })} required value={formData.date || ""} type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
-                                            <input onChange={(e) => setFormData({ ...formData, track: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='الرياض الي دمشق' />
+                                            <input onChange={(e) => setFormData({ ...formData, track: e.target.value })} required value={formData.track || ""} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='الرياض الي دمشق' />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">مدينة الوصول</label>
-                                            <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='مدينة الوصول' />
+                                            <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} required value={formData.destination || ""} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='مدينة الوصول' />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
-                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} required value={formData.PaymentType || ""} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
                                                 <option hidden>نوع الدفع</option>
                                                 <option value="cash">كاش</option>
                                                 <option value="bank">شبكة</option>

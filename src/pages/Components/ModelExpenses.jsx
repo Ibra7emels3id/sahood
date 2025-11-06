@@ -32,7 +32,9 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
             setFormData({
                 InvoiceName: "",
                 invoiceValue: "",
-                invoiceDate: ""
+                invoiceDate: "",
+                tax: "",
+                totalExpenses: ""
             });
             setLoading(false);
         } catch (error) {
@@ -93,7 +95,7 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
-                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} value={formData.PaymentType} class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
                                                 <option hidden>نوع الدفع</option>
                                                 <option value="cash">كاش</option>
                                                 <option value="bank">شبكة</option>

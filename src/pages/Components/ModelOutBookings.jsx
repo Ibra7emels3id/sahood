@@ -31,13 +31,26 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
             onClose();
             setFormData({
                 name: '',
-                name2: '',
                 busNumber: '',
                 track: '',
                 date: '',
                 time: '',
                 price: '',
-                seats: ''
+                seats: '',
+                ticketOfficeFees: '',
+                ticketOfficeInvitedFees: '',
+                NetTicketPrice: '',
+                numberBags: '',
+                passport: '',
+                phone: '',
+                typeSix: '',
+                notes: '',
+                description: '',
+                destination: '',
+                PaymentType: '',
+                RecipientName: '',
+                gender: '',
+                BirthDate: '',
             });
             setLoading(false);
         } catch (error) {
@@ -123,7 +136,7 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الميلاد</label>
-                                            <input onChange={(e) => setFormData({ ...formData, BirthDate: e.target.value })} required type="date"
+                                            <input onChange={(e) => setFormData({ ...formData, BirthDate: e.target.value })} required value={formData.BirthDate || ""} required type="date"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
@@ -157,19 +170,19 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ المغادرة</label>
-                                            <input onChange={(e) => setFormData({ ...formData, date: e.target.value })} type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <input onChange={(e) => setFormData({ ...formData, date: e.target.value })} required value={formData.date || ""} type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
-                                            <input onChange={(e) => setFormData({ ...formData, track: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='الرياض الي دمشق' />
+                                            <input onChange={(e) => setFormData({ ...formData, track: e.target.value })} required value={formData.track || ""} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='الرياض الي دمشق' />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">مدينة الوصول</label>
-                                            <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='مدينة الوصول' />
+                                            <input onChange={(e) => setFormData({ ...formData, destination: e.target.value })} required value={formData.destination || ""} type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='مدينة الوصول' />
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">نوع الدفع</label>
-                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
+                                            <select name="PaymentType" onChange={(e) => setFormData({ ...formData, PaymentType: e.target.value })} value={formData.PaymentType} required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="">
                                                 <option hidden>نوع الدفع</option>
                                                 <option value="cash">كاش</option>
                                                 <option value="bank">شبكة</option>
@@ -178,7 +191,7 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         <div className="grid grid-cols-3 col-span-2 gap-4">
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">أجمالي سعر التذكرة</label>
-                                                <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} required value={formData.price || ''} class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="number" placeholder="أجمالي سعر التذكرة" />
+                                                <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} min="0" required value={formData.price || ''} class="w-full text-start px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="number" placeholder="أجمالي سعر التذكرة" />
                                             </div>
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">سعر المكتب المدعو للتذكرة</label>
