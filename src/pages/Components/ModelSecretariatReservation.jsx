@@ -114,7 +114,7 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
                                         <div className="grid grid-cols-3 gap-4 col-span-3 ">
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">رقم المستلم</label>
-                                                <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} value={formData.passport || ""} type="text" placeholder="رقم الجواز"
+                                                <input onChange={(e) => setFormData({ ...formData, passport: e.target.value })} value={formData.passport || ""} type="text" placeholder="رقم المستلم"
                                                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
                                             <div className='flex flex-col items-start '>
@@ -144,7 +144,7 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">سعر التذكرة</label>
                                                 <input onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} required value={formData.price || ""} type="number" placeholder="سعر التذكرة"
-                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">رسوم السائق</label>
@@ -158,12 +158,12 @@ const ModelSecretariatReservation = ({ openSecretariatModel, setOpenSecretariatM
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">صافي سعر التذكرة</label>
                                                 <input readOnly value={formData.NetTicketPrice || ""} type="number" placeholder="صافي سعر التذكرة"
-                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 " />
                                             </div>
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">المسار</label>
                                                 <input readOnly value={track} type="text"
-                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" />
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 " />
                                             </div>
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">الوجهة</label>

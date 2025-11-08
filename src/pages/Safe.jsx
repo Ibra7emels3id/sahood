@@ -147,7 +147,10 @@ const Safe = ({ UserId, AllUsers }) => {
 
     // safeResAdmin
     const month = Number(selectedMonth);
+
     let totalMonthBalance = 0;
+    let totalMonthBalanceCash = 0;
+    let totalMonthBalanceBank = 0;
 
     // 
     User?.forEach((safe) => {
@@ -328,7 +331,6 @@ const Safe = ({ UserId, AllUsers }) => {
 
         return true;
     });
-
 
     const totalNetPriceReservations = filterDataUserReservations?.reduce(
         (sum, trip) => sum + Number(trip.NetTicketPrice || 0),
