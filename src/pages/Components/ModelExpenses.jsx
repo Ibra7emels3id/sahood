@@ -34,7 +34,8 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                 invoiceValue: "",
                 invoiceDate: "",
                 tax: "",
-                totalExpenses: ""
+                totalExpenses: "",
+                nots: ""
             });
             setLoading(false);
         } catch (error) {
@@ -101,12 +102,13 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                                 <option value="bank">شبكة</option>
                                             </select>
                                         </div>
-                                        <div className='flex flex-col items-start '>
-                                            <label class="text-slate-900 text-sm font-medium mb-2 block">قيمة الفاتورة</label>
-                                            <input onChange={(e) => setFormData({ ...formData, invoiceValue: Number(e.target.value) })} value={formData.invoiceValue || ''} type="number" placeholder="قمية الفاتورة"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
+
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className='flex flex-col items-start '>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">قيمة الفاتورة</label>
+                                                <input onChange={(e) => setFormData({ ...formData, invoiceValue: Number(e.target.value) })} value={formData.invoiceValue || ''} type="number" placeholder="قمية الفاتورة"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            </div>
                                             <div className='flex flex-col items-start '>
                                                 <label class="text-slate-900 text-sm font-medium mb-2 block">القيمة المضافة</label>
                                                 <input onChange={(e) => setTax(Number(e.target.value))} value={tax || ''} type="number" placeholder="القيمة المضافة" className='text-slate-900 text-sm mb-2 block border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-start p-3 font-bold' />
@@ -122,6 +124,10 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الفاتورة</label>
                                             <input onChange={(e) => setFormData({ ...formData, invoiceDate: e.target.value })} value={formData.invoiceDate || ''} type="date" placeholder="تاريخ الفاتورة"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        </div>
+                                        <div className='flex flex-col items-start'>
+                                            <label class="text-slate-900 text-sm font-medium mb-2 block">ملاحظة</label>
+                                            <textarea className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500' name="notes" onChange={(e) => setFormData({ ...formData, nots: e.target.value })} value={formData.nots || ""} placeholder="ملاحظة" id=""></textarea>
                                         </div>
                                     </div>
                                     {

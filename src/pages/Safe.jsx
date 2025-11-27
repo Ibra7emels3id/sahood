@@ -572,7 +572,7 @@ const Safe = ({ UserId, AllUsers }) => {
                                             <span className='text-xs font-bold text-red-400 mt-3 block'>حجوزات + أمانات + سند قبض - سند صرف - مصروفات</span>
                                         </h3>
                                         <h3 className={`${totalMonthBalance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold mt-2`}>
-                                            {totalMonthBalance} ر . س
+                                            {Number(totalMonthBalance).toFixed(2)} ر . س
                                         </h3>
                                         <div className="flex justify-between align-center mt-2">
                                             {/* <p className={`${totalMonthBalanceBank < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
@@ -588,14 +588,14 @@ const Safe = ({ UserId, AllUsers }) => {
                                             <span className='text-xs font-bold text-red-400 my-4 block'>أجمالي رصيد الخزنة الكلي</span>
                                         </h3>
                                         <p className={`${safeResAdmin.balance < 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>
-                                            {safeResAdmin.balance} ر . س
+                                            {Number(safeResAdmin.balance).toFixed(2)} ر . س
                                         </p>
                                         <div className="flex justify-between align-center mt-2">
                                             <p className={`${safeResAdmin.bank < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
-                                                <span className='text-black'>بنك:</span> {safeResAdmin.bank} ر . س
+                                                <span className='text-black'>بنك:</span> {Number(safeResAdmin.bank).toFixed(2)} ر . س
                                             </p>
                                             <p className={`${safeResAdmin.cash < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
-                                                <span className='text-black'>كاش:</span> {safeResAdmin.cash} ر . س
+                                                <span className='text-black'>كاش:</span> {Number(safeResAdmin.cash).toFixed(2)} ر . س
                                             </p>
                                         </div>
                                     </div>
@@ -604,17 +604,17 @@ const Safe = ({ UserId, AllUsers }) => {
                                             <span className='text-xs font-bold text-red-400 my-4 block'>الحجوزات + الامانات + مكتب خارجي</span>
                                         </h3>
                                         <h3 className="text-2xl font-bold">
-                                            {totalAmountAmenities + totalAmount + TotalOutBookings} ر . س
+                                            {Number(totalAmount + totalAmountAmenities + TotalOutBookings).toFixed(2)} ر . س
                                         </h3>
                                         <div className="flex justify-between align-center mt-3">
                                             <p className={`${totalAmount < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
-                                                {totalAmount} ر . س
+                                                {Number(totalAmount).toFixed(2)} ر . س
                                             </p>
                                             <p className={`${totalAmountAmenities < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
-                                                {totalAmountAmenities} ر . س
+                                                {Number(totalAmountAmenities).toFixed(2)} ر . س
                                             </p>
                                             <p className={`${TotalOutBookings < 0 ? 'text-red-600' : 'text-green-600'} text-sm font-bold`}>
-                                                {TotalOutBookings} ر . س
+                                                {Number(TotalOutBookings).toFixed(2)} ر . س
                                             </p>
                                         </div>
                                     </div>
@@ -623,7 +623,7 @@ const Safe = ({ UserId, AllUsers }) => {
                                             <span className='text-xs font-bold text-red-400 my-4 block'>جميع معاملات المصروفات</span>
                                         </h3>
                                         <h3 className="text-2xl font-bold">
-                                            {totalAmountExpenses} ر . س
+                                            {Number(totalExpenses).toFixed(2)} ر . س
                                         </h3>
                                     </div>
                                 </div>

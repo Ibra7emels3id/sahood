@@ -185,6 +185,10 @@ const ModelOutDeposits = ({ isOpen, onClose, FetchDateTrips }) => {
                                                     {formData.NetTicketPrice || 0}
                                                 </p>
                                             </div>
+                                            <div className='flex flex-col items-start col-span-3'>
+                                                <label class="text-slate-900 text-sm font-medium mb-2 block">ملاحظة</label>
+                                                <textarea className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500' name="notes" onChange={(e) => setFormData({ ...formData, notes: e.target.value })} value={formData.notes || ""} placeholder="ملاحظة" id=""></textarea>
+                                            </div>
                                         </div>
                                     </div>
                                     {

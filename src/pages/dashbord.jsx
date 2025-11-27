@@ -127,13 +127,13 @@ const Dashbord = ({ UserId }) => {
                                     <div className="bg-[#eee] p-4 rounded border border-[#fff] shadow">
                                         <h3 className="text-lg font-bold mb-2">إجمالي الايردات</h3>
                                         <p className="text-3xl font-bold">
-                                            {totalBalance} ر.س
+                                            {Number(totalBalance.toFixed(2))} ر.س
                                         </p>
                                     </div>
                                     <div className="bg-[#eee] p-5 rounded border border-[#fff] shadow shadow-[#eee]">
                                         <h3 className="text-lg font-bold mb-2">إجمالي المصروفات</h3>
                                         <p className="text-3xl font-bold">
-                                            {ExpensesData.reduce((sum, exp) => sum + Number(exp.invoiceValue || 0), 0)} ر.س
+                                            {Number(ExpensesData.reduce((sum, exp) => sum + Number(exp.invoiceValue || 0), 0).toFixed(2))} ر.س
                                         </p>
                                     </div>
                                 </>

@@ -212,6 +212,7 @@ const Expenses = ({ AllUsers, User }) => {
                             <thead>
                                 <tr>
                                     <th className="px-4 py-2 border border-gray-200">اسم المصروف</th>
+                                    <th className="px-4 py-2 border border-gray-200">عن الفاتورة</th>
                                     <th className="px-4 py-2 border border-gray-200">اسم المكتب</th>
                                     <th className="px-4 py-2 border border-gray-200">نوع الدفع</th>
                                     <th className="px-4 py-2 border border-gray-200">قيمة المصروف</th>
@@ -222,6 +223,7 @@ const Expenses = ({ AllUsers, User }) => {
                                 {filteredExpenses.map((expense) => (
                                     <tr key={expense._id}>
                                         <td className="px-4 py-2 border border-gray-200">{expense.InvoiceName}</td>
+                                        <td className="px-4 py-2 border border-gray-200">{expense?.nots}</td>
                                         <td className="px-4 py-2 border border-gray-200">{expense.OfficeName}</td>
                                         <td className="px-4 py-2 border border-gray-200">{expense.PaymentType === 'cash' ? 'نقدي' : 'بنك' }</td>
                                         <td className="px-4 py-2 border border-gray-200">

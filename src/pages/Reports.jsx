@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import axios from 'axios';
-import { auth } from '../Config/Firebase/ConfigFirebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
+
 
 const Reports = ({ User, AllUsers }) => {
     const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
