@@ -136,7 +136,7 @@ const ModelOutBookings = ({ isOpen, onClose, FetchDateTrips }) => {
                                         </div>
                                         <div className='flex flex-col items-start '>
                                             <label class="text-slate-900 text-sm font-medium mb-2 block">تاريخ الميلاد</label>
-                                            <input onChange={(e) => setFormData({ ...formData, BirthDate: e.target.value })} required value={formData.BirthDate || ""} required type="date"
+                                            <input onChange={(e) => setFormData({ ...formData, BirthDate: e.target.value })} required value={formData.BirthDate || ""} type="date"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div className='flex flex-col items-start '>
