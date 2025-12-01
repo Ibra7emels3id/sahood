@@ -91,6 +91,7 @@ const ModelExpenses = ({ show, onClose, FetchDateExpenses }) => {
                                                 <option value="كهرباء ومياه">كهرباء ومياه</option>
                                                 <option value="إيجار">إيجار</option>
                                                 <option value="رواتب">رواتب</option>
+                                                <option value="سلفة">سلفة</option>
                                                 <option value="مصروفات أخرى">مصروفات أخرى</option>
                                             </select>
                                         </div>

@@ -5,6 +5,8 @@ import ModelExpenses from './Components/ModelExpenses';
 import axios from 'axios';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../Config/Firebase/ConfigFirebase';
+import logo from '../assets/logo.jpg';
+
 
 const Expenses = ({ AllUsers, User }) => {
     const [showModelExpenses, setShowModelExpenses] = React.useState(false);
@@ -88,6 +90,127 @@ const Expenses = ({ AllUsers, User }) => {
         const matchesOffice = selectedOfficeName ? expense.OfficeName === selectedOfficeName : true;
         return matchesMonth && matchesType && matchesOffice;
     });
+
+    // Handle Print Expenses
+    const HandlePrintExpenses = (id) => {
+        const expenseToPrint = expensesData.find(expense => expense._id === id);
+        const printWindow = window.open('', '_blank', 'width=900,height=800');
+        if (expenseToPrint) {
+            printWindow.document.write(`
+                    <html dir="rtl" lang="ar">
+                      <head>
+                        <title>${expenseToPrint?.InvoiceName}</title>
+                        <style> 
+                          body { 
+                            font-family: "Arial", sans-serif;
+                            padding: 30px;
+                            background-color: #fff;
+                            color: #000;
+                          }
+                          .receipt {
+                            border: 2px solid #000;
+                            padding: 20px 30px;
+                            width: 750px;
+                            margin: auto;
+                            position: relative;
+                          }
+                          .header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            margin-bottom: 10px;
+                          }
+                          .title {
+                            border: 2px solid #000;
+                            padding: 4px 20px;
+                            font-weight: bold;
+                          }
+                          .info {
+                            display: flex;
+                            justify-content: space-between;
+                            margin: 10px 0;
+                            font-size: 16px;
+                          }
+                          .line {
+                            border-bottom: 1px dotted #000;
+                            flex: 1;
+                            margin: 0 5px;
+                            text-align: center;
+                          }
+                          .footer {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-top: 40px;
+                            font-size: 14px;
+                          }
+                          .footer div {
+                            text-align: center;
+                            width: 30%;
+                          }
+                          .bottom-text {
+                            text-align: center;
+                            margin-top: 30px;
+                            font-size: 16px;
+                          }
+                        </style>
+                      </head>
+                      <body>
+                        <div class="receipt">
+                          <div class="header">
+                            <div>
+                              <img src="${logo}" alt="logo" style="height:50px;"/>
+                              <p style="margin:0;">سوريا - دبي - الأردن - اليمن</p>
+                            </div>
+                            <div class="title">${expenseToPrint?.InvoiceName}</div>
+                            <div style="text-align:left;">
+                              <p>0550603044</p>
+                            </div>
+                          </div>
+                            <div class="info">
+                            <span> اصرفوا إلى السيد / السيدة / شئ اخر</span>
+                            <div class="line">${expenseToPrint?.nots}</div>
+                          </div>
+            
+                          <div class="info">
+                            <span>التاريخ:</span>
+                            <div class="line">${new Date(expenseToPrint?.invoiceDate).toLocaleDateString()}</div>
+                            <span>الرقم:</span>
+                            <div class="line">${expenseToPrint?.phone || " "}</div>
+                          </div>
+                
+                          <div class="info">
+                            <span>مبلغ وقدره قبل الضريبة:</span>
+                            <div class="line">${expenseToPrint?.invoiceValue} ريال</div>
+                            <span>مبلغ وقدره بعد الضريبة:</span>
+                            <div class="line">${expenseToPrint?.totalExpenses} ريال</div>
+                          </div>
+                
+                          <div class="info">
+                            <span>نقداً / بنك :</span>
+                            <div class="line">${expenseToPrint.PaymentType === 'cash' ? 'نقدي' : 'بنك'}</div>
+                          </div>
+                
+                          <div class="footer">
+                            <div>المدير</div>
+                            <div>المستلم</div>
+                            <div>أمين الصندوق</div>
+                          </div>
+                
+                          <div class="bottom-text">
+                            الرياض - حي العزيزية - مقابل هايبر نستو
+                          </div>
+                        </div>
+                      </body>
+                    </html>
+                  `);
+
+        }
+        expenseToPrint.document.close();
+        expenseToPrint.onload = () => {
+            expenseToPrint.focus();
+            expenseToPrint.print();
+        };
+    };
 
     // Handle Show Model Expenses
     const HandleShowModelExpenses = () => {
@@ -217,6 +340,7 @@ const Expenses = ({ AllUsers, User }) => {
                                     <th className="px-4 py-2 border border-gray-200">نوع الدفع</th>
                                     <th className="px-4 py-2 border border-gray-200">قيمة المصروف</th>
                                     <th className="px-4 py-2 border border-gray-200">تاريخ المصروف</th>
+                                    <th className="px-4 py-2 border border-gray-200">طباعة</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -225,12 +349,21 @@ const Expenses = ({ AllUsers, User }) => {
                                         <td className="px-4 py-2 border border-gray-200">{expense.InvoiceName}</td>
                                         <td className="px-4 py-2 border border-gray-200">{expense?.nots}</td>
                                         <td className="px-4 py-2 border border-gray-200">{expense.OfficeName}</td>
-                                        <td className="px-4 py-2 border border-gray-200">{expense.PaymentType === 'cash' ? 'نقدي' : 'بنك' }</td>
+                                        <td className="px-4 py-2 border border-gray-200">{expense.PaymentType === 'cash' ? 'نقدي' : 'بنك'}</td>
                                         <td className="px-4 py-2 border border-gray-200">
                                             {expense.invoiceValue}ر.س  بدون ضريبة  <br />
                                             <span className='text-sm text-gray-500'>{expense?.totalExpenses} ر.س  مع الضريبة </span>
                                         </td>
                                         <td className="px-4 py-2 border border-gray-200">{expense.invoiceDate}</td>
+                                        <td className="px-4 py-2 border border-gray-200 flex items-center justify-center">
+                                            <button onClick={() => (
+                                                HandlePrintExpenses(expense._id)
+                                            )} className=" text-violet-800 bg-violet-100 cursor-pointer hover:bg-violet-200 font-bold py-2 px-4 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                                                </svg>
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 <tr>
